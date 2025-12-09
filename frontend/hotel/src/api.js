@@ -61,6 +61,7 @@ export async function apiChangePassword(payload) {
   return res.json();
 }
 
+/** old mark-paid endpoint – ok to keep, or you can delete if unused */
 export async function apiMarkPaid() {
   const token = getToken();
   const res = await fetch(`${API_BASE}/auth/settings/mark-paid`, {
@@ -177,6 +178,18 @@ export async function apiGetLogs() {
 export async function apiGetDashboardSummary() {
   const token = getToken();
   const res = await fetch(`${API_BASE}/dashboard/summary`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.json();
+}
+
+/** NEW: upgrade plan for entire hotel (admin only) */
+export async function apiUpgradePlan() {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/dashboard/upgrade-plan`, {
+    method: 'PUT',
     headers: {
       Authorization: `Bearer ${token}`,
     },

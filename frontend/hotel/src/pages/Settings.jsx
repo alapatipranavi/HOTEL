@@ -1,18 +1,25 @@
 // frontend/src/pages/Settings.jsx
 import { useEffect, useState } from "react";
-import { apiGetMe, apiMarkPaid } from "../api";
+import { useOutletContext } from "react-router-dom";
+import { apiGetMe, apiUpgradePlan } from "../api";
 
-export default function Settings({ user }) {
+export default function Settings() {
+  const { user } = useOutletContext();
+
   const [me, setMe] = useState({
     role: user?.role || "",
     planType: user?.planType || "trial",
     trialEndsAt: user?.trialEndsAt || null,
     hotelName: user?.hotelName || "",
   });
+
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const isAdmin = me.role === "admin";
+  const isPaid = me.planType === "paid";
 
   useEffect(() => {
     const load = async () => {
@@ -40,7 +47,6 @@ export default function Settings({ user }) {
     load();
   }, []);
 
-  // 🔍 DEBUG TRIAL INFO
   const getTrialInfo = () => {
     if (!me.trialEndsAt) {
       if (me.planType === "paid") return "You are on a paid plan.";
@@ -61,7 +67,7 @@ export default function Settings({ user }) {
     const diffMs = endDate.getTime() - todayDate.getTime();
     const daysLeft = Math.ceil(diffMs / oneDayMs);
 
-    // 🔴 DEBUG LOG
+    // Debug log (keep if you like)
     console.log("TRIAL DEBUG =>", {
       rawTrialEndsAt: me.trialEndsAt,
       endDate: endDate.toISOString(),
@@ -81,26 +87,32 @@ export default function Settings({ user }) {
     }
   };
 
-  const handleMarkPaid = async () => {
-    if (!window.confirm("Mark this hotel as paid plan?")) return;
+  const handleUpgrade = async () => {
+    if (!window.confirm("Upgrade this hotel to PAID plan for all users?")) {
+      return;
+    }
 
     try {
       setUpdating(true);
       setError("");
       setSuccess("");
-      const data = await apiMarkPaid();
-      if (data.message) {
+
+      const res = await apiUpgradePlan();
+
+      if (res && res.success) {
         setMe((prev) => ({
           ...prev,
           planType: "paid",
           trialEndsAt: null,
         }));
-        setSuccess("Plan updated to PAID for this hotel.");
+        setSuccess(
+          "Plan upgraded to PAID for this hotel (admin + all staff)."
+        );
       } else {
-        setError(data.message || "Failed to update plan");
+        setError(res?.message || "Upgrade failed");
       }
     } catch (err) {
-      setError("Failed to update plan");
+      setError("Upgrade failed. Please try again.");
     } finally {
       setUpdating(false);
     }
@@ -110,7 +122,8 @@ export default function Settings({ user }) {
     return <p className="muted small">Loading settings...</p>;
   }
 
-  if (me.role !== "admin") {
+  // Non-admin view
+  if (!isAdmin) {
     return (
       <div className="settings-page">
         <h2>Settings</h2>
@@ -119,14 +132,10 @@ export default function Settings({ user }) {
         </p>
         <div className="card" style={{ marginTop: "0.75rem" }}>
           <p className="muted small">
-            Current plan:{" "}
-            <b>{me.planType === "paid" ? "Paid" : "Trial"}</b>
+            Current plan: <b>{isPaid ? "Paid" : "Trial"}</b>
           </p>
-          {me.planType === "trial" && (
-            <p className="muted small">{getTrialInfo()}</p>
-          )}
+          {!isPaid && <p className="muted small">{getTrialInfo()}</p>}
 
-          {/* DEBUG INFO FOR YOU */}
           <p className="muted small">
             Debug – raw trialEndsAt: {String(me.trialEndsAt)}
           </p>
@@ -135,6 +144,7 @@ export default function Settings({ user }) {
     );
   }
 
+  // Admin view
   return (
     <div className="settings-page">
       <h2>Settings & Billing</h2>
@@ -169,32 +179,30 @@ export default function Settings({ user }) {
       <div className="card">
         <h3>Current Plan</h3>
         <p className="muted small">
-          Status:{" "}
-          <b>{me.planType === "paid" ? "PAID PLAN" : "TRIAL PLAN"}</b>
+          Status: <b>{isPaid ? "PAID PLAN" : "TRIAL PLAN"}</b>
         </p>
-        {me.planType === "trial" && (
-          <p className="muted small">{getTrialInfo()}</p>
-        )}
 
-        {me.planType === "paid" && (
+        {!isPaid && <p className="muted small">{getTrialInfo()}</p>}
+
+        {isPaid && (
           <p className="muted small">
-            This hotel is marked as paid. Trial is not active.
+            This hotel is on a paid plan. Trial is not active.
           </p>
         )}
 
-        {me.planType === "trial" && (
+        {/* Upgrade button – only when admin & trial */}
+        {isAdmin && !isPaid && (
           <button
             type="button"
             className="primary-btn"
-            onClick={handleMarkPaid}
+            onClick={handleUpgrade}
             disabled={updating}
             style={{ marginTop: "0.75rem" }}
           >
-            {updating ? "Updating..." : "Mark as Paid Plan"}
+            {updating ? "Upgrading..." : "Upgrade Now"}
           </button>
         )}
 
-        {/* DEBUG INFO FOR YOU */}
         <p className="muted small" style={{ marginTop: "0.75rem" }}>
           Debug – raw trialEndsAt: {String(me.trialEndsAt)}
         </p>

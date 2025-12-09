@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema(
     trialEndsAt: {
       type: Date,
     },
+    
   },
   { timestamps: true }
 );
