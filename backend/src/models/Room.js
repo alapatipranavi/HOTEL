@@ -1,16 +1,32 @@
-// backend/src/models/Room.js
 const mongoose = require('mongoose');
 
 const roomSchema = new mongoose.Schema(
   {
-    roomNumber: { type: String, required: true }, // ex: "101"
+    hotelName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    roomNumber: {
+      type: String,
+      required: true,
+      trim: true
+    },
     roomType: {
       type: String,
       enum: ['single', 'double', 'suite', 'deluxe'],
       required: true,
     },
-    costPerNight: { type: Number, required: true }, // in rupees
-    amenities: [{ type: String }], // ["AC", "TV", "WiFi"]
+    costPerNight: {
+      type: Number,
+      required: true,
+    },
+    amenities: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
     status: {
       type: String,
       enum: ['available', 'occupied', 'under_maintenance'],

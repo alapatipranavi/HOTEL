@@ -1,16 +1,15 @@
 // frontend/src/api.js
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = "http://localhost:5000/api";
 
 function getToken() {
-  return localStorage.getItem('token');
+  return localStorage.getItem("token");
 }
 
 /* ---------- AUTH ---------- */
-
 export async function apiRegister(data) {
   const res = await fetch(`${API_BASE}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
   return res.json();
@@ -18,8 +17,8 @@ export async function apiRegister(data) {
 
 export async function apiLogin(data) {
   const res = await fetch(`${API_BASE}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
   return res.json();
@@ -38,9 +37,9 @@ export async function apiGetMe() {
 export async function apiUpdateProfile(profile) {
   const token = getToken();
   const res = await fetch(`${API_BASE}/auth/profile`, {
-    method: 'PUT',
+    method: "PUT",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(profile),
@@ -51,9 +50,9 @@ export async function apiUpdateProfile(profile) {
 export async function apiChangePassword(payload) {
   const token = getToken();
   const res = await fetch(`${API_BASE}/auth/change-password`, {
-    method: 'PUT',
+    method: "PUT",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(payload),
@@ -61,11 +60,10 @@ export async function apiChangePassword(payload) {
   return res.json();
 }
 
-/** old mark-paid endpoint – ok to keep, or you can delete if unused */
 export async function apiMarkPaid() {
   const token = getToken();
   const res = await fetch(`${API_BASE}/auth/settings/mark-paid`, {
-    method: 'PUT',
+    method: "PUT",
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -74,7 +72,6 @@ export async function apiMarkPaid() {
 }
 
 /* ---------- ROOMS ---------- */
-
 export async function apiGetRooms() {
   const token = getToken();
   const res = await fetch(`${API_BASE}/rooms`, {
@@ -88,9 +85,9 @@ export async function apiGetRooms() {
 export async function apiCreateRoom(room) {
   const token = getToken();
   const res = await fetch(`${API_BASE}/rooms`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(room),
@@ -101,9 +98,9 @@ export async function apiCreateRoom(room) {
 export async function apiUpdateRoomStatus(id, status) {
   const token = getToken();
   const res = await fetch(`${API_BASE}/rooms/${id}/status`, {
-    method: 'PUT',
+    method: "PUT",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ status }),
@@ -112,7 +109,6 @@ export async function apiUpdateRoomStatus(id, status) {
 }
 
 /* ---------- BOOKINGS ---------- */
-
 export async function apiGetBookings() {
   const token = getToken();
   const res = await fetch(`${API_BASE}/bookings`, {
@@ -126,9 +122,9 @@ export async function apiGetBookings() {
 export async function apiCreateBooking(booking) {
   const token = getToken();
   const res = await fetch(`${API_BASE}/bookings`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(booking),
@@ -139,9 +135,9 @@ export async function apiCreateBooking(booking) {
 export async function apiUpdatePayment(id, isPaid) {
   const token = getToken();
   const res = await fetch(`${API_BASE}/bookings/${id}/payment`, {
-    method: 'PUT',
+    method: "PUT",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ isPaid }),
@@ -152,9 +148,9 @@ export async function apiUpdatePayment(id, isPaid) {
 export async function apiCheckoutBooking(id) {
   const token = getToken();
   const res = await fetch(`${API_BASE}/bookings/${id}/checkout`, {
-    method: 'PUT',
+    method: "PUT",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   });
@@ -162,7 +158,6 @@ export async function apiCheckoutBooking(id) {
 }
 
 /* ---------- LOGS ---------- */
-
 export async function apiGetLogs() {
   const token = getToken();
   const res = await fetch(`${API_BASE}/logs`, {
@@ -174,7 +169,6 @@ export async function apiGetLogs() {
 }
 
 /* ---------- DASHBOARD ---------- */
-
 export async function apiGetDashboardSummary() {
   const token = getToken();
   const res = await fetch(`${API_BASE}/dashboard/summary`, {
@@ -185,14 +179,60 @@ export async function apiGetDashboardSummary() {
   return res.json();
 }
 
-/** NEW: upgrade plan for entire hotel (admin only) */
-export async function apiUpgradePlan() {
+export async function apiGetRecentBookings() {
   const token = getToken();
-  const res = await fetch(`${API_BASE}/dashboard/upgrade-plan`, {
-    method: 'PUT',
+  const res = await fetch(`${API_BASE}/dashboard/recent-bookings`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
   return res.json();
+}
+
+/* ---------- SUPERADMIN ---------- */
+export async function apiSuperadminGetHotels() {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/superadmin/hotels`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.json();
+}
+// add to frontend/src/api.js
+
+// Superadmin — list hotels (call this name because Dashboard imports it)
+
+// add to frontend/src/api.js
+
+// Superadmin — list hotels (call this name because Dashboard imports it)
+export async function apiSuperAdminListHotels() {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/superadmin/hotels`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.json();
+}
+
+export async function apiSuperadminUpdateHotelPlan(hotelName, planType, days) {
+  const token = getToken();
+  const res = await fetch(
+    `${API_BASE}/superadmin/hotels/${encodeURIComponent(hotelName)}/plan`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ planType, days }),
+    }
+  );
+  return res.json();
+}
+
+/* ---------- UTIL (generic upgrade wrapper) ---------- */
+export function apiUpgradePlan() {
+  return apiSuperadminUpdateHotelPlan(/* use in frontend by passing hotelName */);
 }

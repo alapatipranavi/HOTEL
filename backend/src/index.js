@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-
+const superadminRoutes = require("./routes/superadmin");
 const authRoutes = require('./routes/auth');
 const roomsRoutes = require('./routes/rooms');
 const bookingsRoutes = require('./routes/bookings');
@@ -25,7 +25,7 @@ app.use('/api/rooms', roomsRoutes);
 app.use('/api/bookings', bookingsRoutes);
 app.use('/api/logs', logsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
-
+app.use('/api/superadmin', superadminRoutes);
 const PORT = process.env.PORT || 5000;
 
 mongoose

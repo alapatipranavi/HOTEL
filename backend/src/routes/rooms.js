@@ -1,3 +1,4 @@
+// backend/src/routes/rooms.js
 const express = require('express');
 const Room = require('../models/Room');
 const auth = require('../middleware/auth');
@@ -93,7 +94,7 @@ router.put('/:id/status', auth, requirePlan, async (req, res) => {
     }
 
     const room = await Room.findOneAndUpdate(
-      { _id: req.params.id, hotelName: req.user.hotelName }, // ⭐ only own hotel rooms
+      { _id: req.params.id, hotelName: req.user.hotelName }, // ⭐ Hotel restriction
       { status },
       { new: true }
     );

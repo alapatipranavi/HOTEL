@@ -65,11 +65,20 @@ export default function Layout({ user, onLogout }) {
           <NavLink to="/bookings" className="nav-link">
             Bookings
           </NavLink>
+
           {role === "admin" && (
             <NavLink to="/logs" className="nav-link">
               System Logs
             </NavLink>
           )}
+
+          {/* ⭐ ONLY SUPERADMIN – extra menu */}
+          {role === "superadmin" && (
+            <NavLink to="/superadmin" className="nav-link">
+              Super Admin
+            </NavLink>
+          )}
+
           <NavLink to="/profile" className="nav-link">
             Profile
           </NavLink>
@@ -77,6 +86,7 @@ export default function Layout({ user, onLogout }) {
             Settings
           </NavLink>
         </nav>
+
 
         <button className="logout-btn" onClick={onLogout}>
           Logout
@@ -109,3 +119,4 @@ export default function Layout({ user, onLogout }) {
     </div>
   );
 }
+

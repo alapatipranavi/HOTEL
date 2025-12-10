@@ -10,6 +10,8 @@ import Bookings from "./pages/Bookings";
 import Logs from "./pages/Logs";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import SuperAdmin from "./pages/SuperAdmin";
+
 
 // localStorage nundi user safe ga tesukodaniki
 function getInitialUser() {
@@ -62,6 +64,7 @@ export default function App() {
             <Route path="/profile" element={<Profile user={user} />} />
             <Route path="/settings" element={<Settings user={user} />} />
             <Route path="*" element={<Navigate to="/dashboard" />} />
+            <Route path="/superadmin" element={<SuperAdmin />} />
           </Route>
         )}
       </Routes>
